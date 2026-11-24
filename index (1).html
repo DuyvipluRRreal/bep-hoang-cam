@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bếp Hoàng Cầm – Lịch sử và mô phỏng</title>
+<style>
+:root{--bg:#e9eddf;--ink:#1f2a1c;--mute:#4d5a47;--olive:#4f6b2e;--soil:#6b4a2f;--card:#f6f8ef;--line:#c5cdb5;--fire:#e8742a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.7 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{background:#27331f;color:#eef2e2;padding:56px 20px 44px}
+.wrap{max-width:900px;margin:0 auto;padding:0 18px}
+header .wrap{padding:0}
+h1{font:700 clamp(2rem,6vw,3.4rem)/1.15 Georgia,"Times New Roman",serif;margin:0 0 12px}
+header p{max-width:60ch;margin:0;color:#c9d4b6;font-size:1.1rem}
+h2{font:700 1.7rem/1.3 Georgia,serif;margin:48px 0 10px;color:#2b3a22}
+h3{margin:0 0 4px;font-size:1.05rem}
+p{max-width:68ch}
+.tl{border-left:3px solid var(--olive);margin:18px 0;padding-left:20px}
+.tl div{margin-bottom:16px}
+.tl b{color:var(--olive)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:16px 0}
+.box{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 16px}
+.box p{margin:0;font-size:.97rem;color:var(--mute)}
+.sim{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;margin-top:14px}
+canvas{width:100%;height:auto;display:block;border-radius:6px;background:#9dc6dc}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+button{font:inherit;font-size:.95rem;border:1px solid var(--olive);background:#fff;color:var(--ink);padding:7px 13px;border-radius:6px;cursor:pointer}
+button:hover{background:#eef3e0}
+button:focus-visible{outline:3px solid #f0b429;outline-offset:2px}
+button.on{background:var(--olive);color:#fff}
+button.go{background:var(--fire);border-color:#b9560f;color:#fff;font-weight:600}
+button:disabled{opacity:.5;cursor:default}
+.seg button{border-radius:0}.seg button:first-child{border-radius:6px 0 0 6px}.seg button:last-child{border-radius:0 6px 6px 0}
+.stat{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+.meter{flex:1;min-width:200px}
+.bar{height:14px;background:#dfe5cf;border-radius:7px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--olive);transition:width .3s}
+#smokeBar i{background:#6d6d6d}
+.badge{padding:3px 10px;border-radius:12px;font-size:.9rem;font-weight:600;background:#dfe5cf}
+.badge.bad{background:#f3c9b8;color:#7a2a08}.badge.ok{background:#cfe5b8;color:#27441a}
+#result{min-height:2.2em;font-weight:600}
+ul{padding-left:20px}
+footer{padding:30px 0 50px;color:var(--mute);font-size:.9rem}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<h1>Bếp Hoàng Cầm</h1>
+<p>Chiếc bếp giấu khói của người lính nuôi quân trong kháng chiến chống Pháp: vì sao ra đời, hoạt động ra sao, và mô phỏng ngay trên trang này.</p>
+</div></header>
+
+<main class="wrap">
+<h2>Bếp Hoàng Cầm là gì?</h2>
+<p>Bếp Hoàng Cầm là loại bếp đào dưới đất, có đường dẫn khói ngầm kéo dài. Khói từ chỗ đun không bốc thẳng lên trời mà đi qua rãnh ngầm, nguội dần, tản ra và thoát lên mặt đất ở những lỗ nhỏ xa chỗ nấu. Nhờ vậy máy bay trinh sát của địch khó phát hiện vị trí đơn vị, nhất là ban ngày.</p>
+
+<h2>Nguồn gốc lịch sử</h2>
+<div class="tl">
+<div><b>Bối cảnh.</b> Trong kháng chiến chống Pháp, bộ đội thường phải nấu ăn ngay trong rừng. Khói bếp bốc lên là dấu hiệu lộ vị trí, dễ bị máy bay địch phát hiện và ném bom.</div>
+<div><b>Sáng kiến.</b> Người chiến sĩ nuôi quân Hoàng Cầm nghĩ ra cách đào bếp dưới đất và dẫn khói qua rãnh ngầm để giảm khói lộ ra ngoài. Theo nhiều tài liệu, bếp xuất hiện vào khoảng cuối thập niên 1940.</div>
+<div><b>Phổ biến.</b> Cách làm bếp được nhân rộng trong quân đội và dân công, được dùng trong nhiều chiến dịch, rồi tiếp tục dùng ở các giai đoạn sau của cuộc kháng chiến.</div>
+<div><b>Ý nghĩa.</b> Bếp Hoàng Cầm là ví dụ tiêu biểu của sáng tạo từ thực tiễn, góp phần bảo đảm hậu cần: có bữa ăn nóng cho bộ đội mà vẫn giữ bí mật.</div>
+</div>
+
+<h2>Cấu tạo và nguyên lý</h2>
+<div class="grid">
+<div class="box"><h3>Hố bếp</h3><p>Đào sâu xuống đất, đặt nồi lên miệng hố. Lửa cháy trong hố nên ánh lửa cũng bị che.</p></div>
+<div class="box"><h3>Rãnh dẫn khói</h3><p>Rãnh ngầm dài, thường vài mét trở lên. Khói đi trong rãnh, mất nhiệt, loãng dần.</p></div>
+<div class="box"><h3>Lỗ thoát khói</h3><p>Nhiều lỗ nhỏ cách xa bếp, thường phủ lá cây, cỏ. Khói chỉ còn là các làn mỏng.</p></div>
+<div class="box"><h3>Nhiên liệu</h3><p>Dùng củi khô để cháy hết, ít khói. Củi ướt sinh nhiều khói hơn.</p></div>
+</div>
+<p>Nguyên lý: khói nóng bốc lên nhanh và thành cột rõ nét. Khi buộc khói đi ngang qua đường dài dưới đất, nó nguội đi, hòa loãng và thoát ra phân tán, nên khó nhìn thấy từ trên cao.</p>
+
+<h2>Mô phỏng nấu ăn và khói</h2>
+<p>Chọn chế độ bếp, bỏ nguyên liệu vào nồi rồi bấm “Nấu”. So sánh lượng khói lộ trên mặt đất giữa bếp thường và bếp Hoàng Cầm.</p>
+<div class="sim">
+<div class="row seg" role="group" aria-label="Chế độ bếp">
+<button id="mHC" class="on">Bếp Hoàng Cầm</button><button id="mNor">Bếp thường</button>
+</div>
+<canvas id="cv" width="800" height="400" role="img" aria-label="Mặt cắt bếp, nồi và đường khói"></canvas>
+<div class="row" id="ings" role="group" aria-label="Nguyên liệu"></div>
+<div class="row">
+<button id="cook" class="go">Nấu</button>
+<button id="clear">Đổ nồi</button>
+<span id="pot">Nồi đang trống</span>
+</div>
+<div class="stat">
+<div class="meter"><div>Tiến độ nấu</div><div class="bar"><i id="cookBar"></i></div></div>
+<div class="meter"><div>Khói lộ trên mặt đất: <b id="smokePct">0%</b></div><div class="bar" id="smokeBar"><i></i></div></div>
+<span id="status" class="badge ok">An toàn</span>
+</div>
+<p id="result" aria-live="polite"></p>
+</div>
+
+<h2>Câu hỏi thảo luận</h2>
+<ul>
+<li>Vì sao khói đi qua rãnh dài lại khó nhìn thấy hơn khói bốc thẳng lên?</li>
+<li>Nhiên liệu ướt hay khô ảnh hưởng thế nào đến việc giữ bí mật?</li>
+<li>Em có thể nêu một sáng kiến khác xuất phát từ khó khăn thực tế trong lao động hoặc chiến đấu?</li>
+</ul>
+<footer>Trang minh họa phục vụ giảng dạy. Mô phỏng chỉ mang tính trực quan, không phải số liệu đo đạc. Các mốc lịch sử nên đối chiếu thêm với sách giáo khoa và tư liệu chính thức.</footer>
+</main>
+
+<script>
+(function(){
+const cv=document.getElementById('cv'),c=cv.getContext('2d'),W=800,H=400,G=170;
+const FX=150,TY=G+36,VENTS=[360,500,640],END=680;
+let hc=true,cooking=false,prog=0,fireOn=0,parts=[],meter=0,t=0,pot=[];
+const ING=[["Gạo","🍚"],["Sắn","🥔"],["Khoai","🍠"],["Rau","🥬"],["Thịt","🍖"],["Cá","🐟"],["Măng","🎍"]];
+const $=id=>document.getElementById(id);
+
+ING.forEach(([n,e])=>{const b=document.createElement('button');b.textContent=e+' '+n;b.onclick=()=>{if(cooking)return;const i=pot.indexOf(n);i<0?pot.push(n):pot.splice(i,1);b.classList.toggle('on',i<0);upd();};b.dataset.n=n;$('ings').appendChild(b);});
+function upd(){$('pot').textContent=pot.length?'Trong nồi: '+pot.join(', '):'Nồi đang trống';$('result').textContent='';}
+function dish(){const h=n=>pot.includes(n);
+ if(h("Gạo")&&h("Thịt"))return "Cháo thịt nóng hổi";
+ if(h("Gạo")&&h("Cá"))return "Cháo cá";
+ if(h("Gạo")&&h("Rau"))return "Cháo rau";
+ if(h("Gạo")&&h("Măng"))return "Cơm nấu măng";
+ if(h("Gạo"))return "Nồi cơm trắng";
+ if(h("Cá")&&h("Măng"))return "Cá kho măng";
+ if(h("Thịt")&&h("Rau"))return "Thịt xào rau";
+ if(h("Sắn")||h("Khoai"))return "Sắn, khoai luộc"+(h("Rau")?" ăn kèm rau":"");
+ return "Món hầm: "+pot.join(", ");}
+function setMode(m){hc=m;$('mHC').classList.toggle('on',m);$('mNor').classList.toggle('on',!m);parts=[];}
+$('mHC').onclick=()=>setMode(true);$('mNor').onclick=()=>setMode(false);
+$('clear').onclick=()=>{if(cooking)return;pot=[];document.querySelectorAll('#ings button').forEach(b=>b.classList.remove('on'));upd();$('cookBar').style.width='0';prog=0;};
+$('cook').onclick=()=>{if(cooking)return;if(!pot.length){$('result').textContent='Hãy bỏ nguyên liệu vào nồi trước.';return;}
+ cooking=true;prog=0;$('result').textContent='Đang nấu...';$('cook').disabled=true;};
+
+function spawn(){
+ if(hc){parts.push({x:FX+30,y:TY,vx:1.3+Math.random()*.8,vy:(Math.random()-.5)*.25,life:0,max:600,r:5+Math.random()*3,up:false});}
+ else{parts.push({x:FX+(Math.random()-.5)*30,y:G-40,vx:.25+Math.random()*.3,vy:-1-Math.random()*.7,life:0,max:210,r:7+Math.random()*4,up:true});}
+}
+function step(){
+ t++;
+ if(cooking){fireOn=1;prog+=1/500;if(t%(hc?3:2)==0)spawn();if(prog>=1){cooking=false;$('cook').disabled=false;$('result').textContent='Xong: '+dish()+'.';}}
+ else fireOn=Math.max(0,fireOn-.02);
+ $('cookBar').style.width=Math.min(100,prog*100)+'%';
+ let expo=0;
+ parts=parts.filter(p=>{
+  p.life++;
+  if(hc&&!p.up){const ox=p.x;p.x+=p.vx;p.y+=p.vy;p.y=Math.max(G+27,Math.min(G+45,p.y));p.vx*=.998;
+   if(p.x>=END){return false;}
+   for(const v of VENTS){if(ox<v&&p.x>=v&&Math.random()<.3){p.up=true;p.vx=(Math.random()-.5)*.3;p.vy=-.7;p.life=p.max-90;p.r=3;p.vent=true;}}
+   p.a=.4*(1-(p.x-FX)/540);}
+  else{p.x+=p.vx+Math.sin((p.life+p.y)/30)*.2;p.y+=p.vy;p.r+=p.vent?.04:.06;
+   p.a=p.vent?.07*(1-(p.life-(p.max-90))/90):.5*(1-p.life/p.max);
+   if(p.y<G-2)expo+=Math.max(0,p.a)*p.r/7;}
+  return p.life<p.max&&p.y>-20&&(p.a===undefined||p.a>0.002||p.up===false);
+ });
+ meter+=(Math.min(100,expo*.55)-meter)*.08;
+ const m=Math.round(meter);$('smokePct').textContent=m+'%';$('smokeBar').firstElementChild.style.width=m+'%';
+ const s=$('status');if(m>35){s.textContent='Bị phát hiện từ trên cao!';s.className='badge bad';}else{s.textContent='An toàn';s.className='badge ok';}
+}
+function draw(){
+ const g=c.createLinearGradient(0,0,0,G);g.addColorStop(0,'#7fb3d1');g.addColorStop(1,'#cfe6ef');c.fillStyle=g;c.fillRect(0,0,W,G);
+ // trees
+ for(const x of [60,260,430,590,740]){c.fillStyle='#5b3b22';c.fillRect(x-5,G-70,10,70);c.fillStyle='#2f5a2b';c.beginPath();c.arc(x,G-90,34,0,7);c.arc(x-20,G-72,24,0,7);c.arc(x+22,G-72,24,0,7);c.fill();}
+ // ground
+ c.fillStyle='#6b4a2f';c.fillRect(0,G,W,H-G);c.fillStyle='#4d8a35';c.fillRect(0,G-4,W,6);
+ c.fillStyle='#4a3220';for(let i=0;i<40;i++){c.fillRect((i*97)%W,G+60+(i*53)%160,6,3);}
+ // pit
+ c.fillStyle='#2a1c12';c.fillRect(FX-35,G,70,50);
+ if(hc){c.fillRect(FX+35,TY-10,END-FX-35,20);
+  for(const v of VENTS){c.fillRect(v-6,G,12,TY-G);c.fillStyle='#3f7a2c';c.fillRect(v-14,G-6,28,7);c.fillStyle='#2a1c12';}}
+ // fire
+ if(fireOn>0){for(let i=0;i<6;i++){const fx=FX-18+i*7+Math.sin(t/4+i)*2,fh=(14+Math.random()*16)*fireOn;c.fillStyle=i%2?'#f6b73c':'#e8742a';c.beginPath();c.moveTo(fx-6,G+48);c.quadraticCurveTo(fx,G+48-fh*1.6,fx+6,G+48);c.fill();}}
+ c.fillStyle='#8a5a2b';c.fillRect(FX-22,G+46,44,4);
+ // particles
+ for(const p of parts){if(p.a>0){c.fillStyle='rgba(70,70,70,'+Math.min(.7,p.a)+')';c.beginPath();c.arc(p.x,p.y,p.r,0,7);c.fill();}}
+ // pot
+ c.fillStyle='#3a3a3a';c.beginPath();c.moveTo(FX-38,G-34);c.lineTo(FX+38,G-34);c.lineTo(FX+30,G+2);c.lineTo(FX-30,G+2);c.fill();
+ c.fillRect(FX-42,G-38,84,6);
+ if(pot.length){c.font='20px serif';c.textAlign='center';pot.slice(0,5).forEach((n,i)=>{const e=ING.find(x=>x[0]==n)[1];c.fillText(e,FX-28+i*14,G-40+Math.sin(t/12+i)*(cooking?3:0));});}
+ if(cooking){c.strokeStyle='rgba(255,255,255,.6)';c.lineWidth=2;for(let i=-1;i<=1;i++){c.beginPath();c.moveTo(FX+i*14,G-62);c.quadraticCurveTo(FX+i*14+6*Math.sin(t/10+i),G-76,FX+i*14,G-90);c.stroke();}}
+ // plane
+ const px=((t*1.2)%1100)-150;c.fillStyle='#2b2b2b';c.beginPath();c.moveTo(px,38);c.lineTo(px+36,34);c.lineTo(px+44,38);c.lineTo(px+36,42);c.closePath();c.fill();c.fillRect(px+14,26,6,24);
+ c.font='13px system-ui';c.fillStyle='#fff';c.textAlign='left';
+ c.fillText('Máy bay trinh sát',Math.max(4,Math.min(W-130,px-30)),20);
+ c.fillStyle='#e9eddf';c.fillText(hc?'Rãnh dẫn khói ngầm':'Hố bếp',hc?(FX+END)/2-40:FX-30,G+78);
+ c.fillText('Mặt đất',W-70,G+16);
+}
+function loop(){step();draw();requestAnimationFrame(loop);}
+loop();
+})();
+</script>
+</body>
+</html>
